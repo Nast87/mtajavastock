@@ -83,9 +83,10 @@ public class Stock extends HttpServlet {
 		String line1 = new String (stock1.getHtmlDescription());
 		String line2 = new String (stock2.getHtmlDescription());
 		String line3 = new String (stock3.getHtmlDescription());
-		//String stockHtmlDetailsString = line1 + "<br>" + line2 + "<br>" +line3;
+		String stockHtmlDetailsString = line1 + "<br>" + line2 + "<br>" +line3;
 		
 		resp.setContentType("text/html");
-		resp.getWriter().println(line1 + "<br>" + line2 + "<br>" +line3);
+		resp.getWriter().println("<b>Stock Details: </b>");
+		resp.getWriter().println("<br>"+"<br>"+stockHtmlDetailsString);
 	}
 }
