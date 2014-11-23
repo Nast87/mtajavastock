@@ -19,7 +19,7 @@ public class JavaProjectServlet extends HttpServlet {
 		double angleB = Math.PI/6;
 		int opposite = (int)(Math.sin(angleB) * hypotenuse);
 		int base = 20, exp = 13;
-		int result1 = (int)(Math.pow(base, exp));
+		long result1 = (long)(Math.pow(base, exp));
 				
 		String line1 = new String("Calculation 1: Area of circle with radius " +radius+ " is : "+area+" square-cm");
 		String line2 = new String("Calculation 2: Length of opposite where angle B is 30 degrees and Hypotenuse lenth is 50 cm is : "+opposite+" cm");
@@ -27,7 +27,6 @@ public class JavaProjectServlet extends HttpServlet {
 		String resultStr1 = "<br>" + line1 + "<br>" + line2 + "<br>" +line3;
 				
 		resp.setContentType("text/html");
-		resp.getWriter().println(resultStr1);
-		
+		resp.getWriter().println(resultStr1);	
 	}
 }
