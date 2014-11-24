@@ -25,7 +25,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	
 	<servlet>
 		<servlet-name>StockDetails</servlet-name>
-		<servlet-class>com.mta.javacourse.Stock</servlet-class>
+		<servlet-class>com.mta.javacourse.StockDetailsServlet</servlet-class>
 	</servlet>
 	
 	<servlet-mapping>
