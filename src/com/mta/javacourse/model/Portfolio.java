@@ -9,11 +9,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.mta.javacourse.Stock;
 
+/**
+ * An instance of this class represents a storage place in order to manage all stocks in one place
+ * @author AnastasyaZiser
+ * 4.12/2014
+ */
+
 @SuppressWarnings({ "serial", "unused" })
 public class Portfolio extends HttpServlet {
 	
 	private final static int MAX_PORTFOLIO_SIZE = 5;
-	private String title;
+	private String title = "<h1> Portfolio title </h1>";
 	private Stock[] stocks;
 	private StockStatus[] stocksStatus;
 	private int portfolioSize = 0;
@@ -55,21 +61,30 @@ public class Portfolio extends HttpServlet {
 		stocksStatus = new StockStatus [MAX_PORTFOLIO_SIZE];
 	}
 	
+	/**
+	 * @param stock - added to the array of stocks
+	 * receives Stock and add it to portfolio’s stocks array.
+	 */
 	public void addStock(Stock stock) {
 		stocks[portfolioSize] = stock;
 		portfolioSize++;
 	}
 	
+	/**
+	 * @return the stocks array
+	 */
 	public Stock[] getStocks() {
 		return stocks;
 	}
 	
+	/**
+	 * @return returns string with portfolio title and all stocks html code
+	 */
 	public String getHtmlString() {
-		String stockTitle = "<h1> Portfolio title </h1>";
 		String htmlCodeString = " ";
 		for (int i = 0; i < portfolioSize; i++)
 			htmlCodeString += stocks[i].getHtmlDescription() + "<br>";
-		return stockTitle + htmlCodeString;
+		return title + htmlCodeString;
 	}
 	
 	public class StockStatus {

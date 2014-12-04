@@ -7,6 +7,12 @@ import javax.servlet.http.HttpServlet;
 import com.mta.javacourse.Stock;
 import com.mta.javacourse.model.Portfolio;
 
+/**
+ * An instance of this class activate actions defined in Portfolio Class.
+ * @author AnastasyaZiser
+ * 04/12/2014
+ */
+
 @SuppressWarnings("serial")
 public class PortfolioService extends HttpServlet {
 	
@@ -21,7 +27,9 @@ public class PortfolioService extends HttpServlet {
 		this.myPortfolio = myPortfolio;
 	}
 
-
+/**
+ * @return full updated portfolio containing all new stocks information
+ */
 	public Portfolio getPortfolio() {
 		
 		Calendar c = Calendar.getInstance();
@@ -56,6 +64,5 @@ public class PortfolioService extends HttpServlet {
 		myPortfolio.addStock(stock3);
 		
 		return myPortfolio;
-	
 	} 
 }

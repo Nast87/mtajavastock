@@ -10,6 +10,12 @@ import com.mta.javacourse.Stock;
 import com.mta.javacourse.model.Portfolio;
 import com.mta.javacourse.service.PortfolioService;
 
+/**
+ * An instance of this class presents the portfolio data in web page.
+ * @author AnastasyaZiser
+ * 4/12/2014
+ */
+
 @SuppressWarnings("serial")
 public class PortfolioServlet extends HttpServlet {
 	
