@@ -5,35 +5,6 @@ xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<servlet>
-		<servlet-name>JavaProject</servlet-name>
-		<servlet-class>com.mta.javacourse.JavaProjectServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>JavaProject</servlet-name>
-		<url-pattern>/javaproject</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>My_New_Servlet</servlet-name>
-		<servlet-class>com.mta.javacourse.ClassExercise</servlet-class>
-	</servlet>
-	
-	<servlet-mapping>
-		<servlet-name>My_New_Servlet</servlet-name>
-		<url-pattern>/my_new_servlet</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>StockDetails</servlet-name>
-		<servlet-class>com.mta.javacourse.StockDetailsServlet</servlet-class>
-	</servlet>
-	
-	<servlet-mapping>
-		<servlet-name>StockDetails</servlet-name>
-		<url-pattern>/stockdetails</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
 		<servlet-name>Portfolio</servlet-name>
 		<servlet-class>com.mta.javacourse.servlet.PortfolioServlet</servlet-class>
 	</servlet>

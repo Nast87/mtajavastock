@@ -1,68 +1,47 @@
 package com.mta.javacourse.service;
 
-import java.util.Calendar;
 import java.util.Date;
 
-import javax.servlet.http.HttpServlet;
-import com.mta.javacourse.Stock;
 import com.mta.javacourse.model.Portfolio;
+import com.mta.javacourse.model.Portfolio.StockStatus;
+import com.mta.javacourse.model.Stock;
 
 /**
  * An instance of this class activate actions defined in Portfolio Class.
  * @author AnastasyaZiser
- * 04/12/2014
+ * 20/12/2014
  */
 
-@SuppressWarnings("serial")
-public class PortfolioService extends HttpServlet {
+public class PortfolioService {
 	
-	private Portfolio myPortfolio = new Portfolio();
+	private final static int MAX_PORTFOLIO_SIZE = 5;
+	Portfolio myPortfolio;
 	
-	public Portfolio getMyPortfolio() {
-		return myPortfolio;
+	public PortfolioService() {
+		myPortfolio = new Portfolio(new Stock[ MAX_PORTFOLIO_SIZE], new StockStatus[ MAX_PORTFOLIO_SIZE], 0, " ");
 	}
+	
+	/**
+	* This method initializes all fields of the stocks, adds them to the new portfolio and returns the new portfolio. 
+	*/
+	public Portfolio getPortfolio(){
 
-
-	public void setMyPortfolio(Portfolio myPortfolio) {
-		this.myPortfolio = myPortfolio;
-	}
-
-/**
- * @return full updated portfolio containing all new stocks information
- */
-	public Portfolio getPortfolio() {
+		Stock stock1, stock2, stock3;
+		Date date = new Date();
 		
-		Calendar c = Calendar.getInstance();
-		c.set(2014, 10, 15, 00, 00);
-		Date myDate = c.getTime();
-		
-		Stock stock1;
-		stock1 = new Stock();
-		stock1.setSymbol("PIH");
-		stock1.setAsk((float) 12.4);
-		stock1.setBid((float) 13.1);
-		stock1.setDate(myDate);
-		
+		stock1 = new Stock("PIH",(float)12.4,(float)13.1,date);
 		myPortfolio.addStock(stock1);
-
-		Stock stock2;
-		stock2 = new Stock();
-		stock2.setSymbol("AAL");
-		stock2.setAsk((float) 5.5);
-		stock2.setBid((float) 5.78);
-		stock2.setDate(myDate);
 		
+		stock2 = new Stock("AAL",(float)5.5,(float)5.78,date);
 		myPortfolio.addStock(stock2);
-			
-		Stock stock3;
-		stock3 = new Stock();
-		stock3.setSymbol("CAAS");
-		stock3.setAsk((float) 31.5);
-		stock3.setBid((float) 31.2);
-		stock3.setDate(myDate);
 		
+		stock3 = new Stock("CAAS",(float)31.5,(float)31.2,date);
 		myPortfolio.addStock(stock3);
 		
+		myPortfolio.setTitle("Potfolio #1");
+
 		return myPortfolio;
-	} 
+	}
 }
+	
+	

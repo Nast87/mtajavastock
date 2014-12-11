@@ -1,16 +1,29 @@
-package com.mta.javacourse;
+package com.mta.javacourse.model;
 
-import java.io.IOException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
-@SuppressWarnings("serial")
-public class Stock extends HttpServlet {
+public class Stock {
 	
 	private String symbol;
 	private float ask, bid;
 	private java.util.Date date;
+	
+	/**
+	* This constructor creates a new Stock
+	*/
+	public Stock(String string, float Ask, float Bid, Date date1) {
+		symbol = string;
+		ask = Ask;
+		bid = Bid;
+		date = date1;
+	}
+
+	/**
+	* This constructor copies the data from the Stock and creates new Stock with the same data
+	*/
+	public Stock(Stock stock){
+		this(stock.getSymbol(),stock.getAsk(),stock.getBid(),stock.getDate());
+	}
 	
 	public String getSymbol() {
 		return symbol;
@@ -47,10 +60,5 @@ public class Stock extends HttpServlet {
 	public String getHtmlDescription() {
 		String stockHtmlDetailsString = new String ("<b>Stock symbol</b>: "+getSymbol()+" <b>Ask</b>: "+getAsk()+" <b>Bid</b>: "+getBid()+" <b>Date</b>: "+getDate());
 		return stockHtmlDetailsString;
-	}
-	
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
-		
 	}
 }
