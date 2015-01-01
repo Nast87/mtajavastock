@@ -2,6 +2,7 @@ package com.mta.javacourse.model;
 
 import java.util.Date;
 
+
 /**
  * An instance of this class represents a storage place in order to manage all stocks in one place
  * @author AnastasyaZiser
@@ -12,10 +13,9 @@ public class Portfolio {
 	
 	private final static int MAX_PORTFOLIO_SIZE = 5;
 	private String title;
-	private Stock[] stocks;
 	private StockStatus[] stocksStatus;
 	private int portfolioSize = 0;
-	private enum ALGO_RECOMMENDATION {DO_NOTHING,BUY,SELL};
+	public enum ALGO_RECOMMENDATION {DO_NOTHING,BUY,SELL};
 	private float balance;
 	
 
@@ -46,23 +46,11 @@ public class Portfolio {
 	public static int getMaxPortfolioSize() {
 		return MAX_PORTFOLIO_SIZE;
 	}
-
-	public void setStocks(Stock[] stocks) {
-		this.stocks = stocks;
-	}
-	
-	/**
-	 * @return the stocks array
-	 */
-	public Stock[] getStocks() {
-		return stocks;
-	}
 	
 	/**
 	* This constructor creates new portfolio
 	*/
-	public Portfolio(Stock newStocks[], StockStatus newStocksStatus[], int newPortfolioSize, String newTitle) {
-		stocks = newStocks;
+	public Portfolio(StockStatus newStocksStatus[], int newPortfolioSize, String newTitle) {
 		stocksStatus = newStocksStatus;
 		portfolioSize = newPortfolioSize;
 		title = newTitle;
@@ -72,10 +60,9 @@ public class Portfolio {
 	* This constructor copies the data from the portfolio and creates new portfolio with the same data
 	*/
 	public Portfolio (Portfolio portfolio) {
-		this(new Stock[MAX_PORTFOLIO_SIZE], new StockStatus[MAX_PORTFOLIO_SIZE], 0, " ");
+		this(new StockStatus[MAX_PORTFOLIO_SIZE], 0, " ");
 		
 		for (int i = 0; i < portfolio.portfolioSize; i++) {
-			stocks[i] = new Stock(portfolio.stocks[i]);
 			stocksStatus[i] = new StockStatus(portfolio.stocksStatus[i]);	
 		}
 		
@@ -95,14 +82,13 @@ public class Portfolio {
 			flag = true;
 		}
 		for (int i = 0; i < portfolioSize && (!flag); i++) {
-			if (stocks[i].getSymbol() == newStock.getSymbol()) {
+			if (stocksStatus[i].getSymbol() == newStock.getSymbol()) {
 				System.out.println("This stock already exists at the array. You can buy stock instead");
 				flag = true;
 			}
 		}
 		if(!flag) {
-			stocks[portfolioSize] = newStock;
-			stocksStatus[portfolioSize] = new StockStatus (newStock.getSymbol(), newStock.getAsk(), newStock.getBid(), new Date(newStock.getDate().getTime()), ALGO_RECOMMENDATION.DO_NOTHING, 0);
+			stocksStatus[portfolioSize] = new StockStatus (newStock.getSymbol(), newStock.getAsk(), newStock.getBid(), new Date(newStock.getDate().getTime()), 0, ALGO_RECOMMENDATION.DO_NOTHING);
 			portfolioSize++;
 			System.out.println("The stock" +newStock.getSymbol()+ "was succesfully added to the array");
 		}
@@ -115,7 +101,7 @@ public class Portfolio {
 		String htmlTitle = "<b><h1>"+ this.getTitle()+":</h1></b><br>";
 		String htmlCodeString = " ";
 		for (int i = 0; i < portfolioSize; i++) {
-			htmlCodeString += stocks[i].getHtmlDescription() + stocksStatus[i].getStockQuantity() + "<br>";
+			htmlCodeString += stocksStatus[i].getHtmlDescription() + stocksStatus[i].getStockQuantity() + "<br>";
 		}
 		htmlCodeString += ("<br><b>Portfolio Value: "+ this.getTotalValue()+ " $ <br> Total stock's value: "+this.getStocksValue()+" $<br>The Balance is: "+this.getBalance()+ " $");
 		return htmlTitle + htmlCodeString;
@@ -136,9 +122,9 @@ public class Portfolio {
 	 */
 	public boolean removeStock(String symbol) {
 		for (int i = 0; i < portfolioSize; i++) {
-			if (symbol == stocks[i].getSymbol()) {
+			if (symbol == stocksStatus[i].getSymbol()) {
 				sellStock(symbol, -1);
-				stocks[i] = stocks[portfolioSize - 1];
+				stocksStatus[i] = stocksStatus[portfolioSize - 1];
 				stocksStatus[i] = stocksStatus[portfolioSize-1];
 				portfolioSize--;
 				System.out.println("The stock " +symbol+ " was succesfully removed");
@@ -157,16 +143,16 @@ public class Portfolio {
 	 */
 	public boolean sellStock (String symbol, int quantity) {
 		for (int i = 0; i < portfolioSize; i++) {
-			if (symbol == stocks[i].getSymbol()) {
+			if (symbol == stocksStatus[i].getSymbol()) {
 				if(quantity == -1) {	
-					updateBalance (stocks[i].getBid() * stocksStatus[i].getStockQuantity());
+					updateBalance (stocksStatus[i].getBid() * stocksStatus[i].getStockQuantity());
 					stocksStatus[i].setStockQuantity(0);
 					System.out.println("All " +symbol+ " stocks were sold");
 				}
 				else {
 					if(stocksStatus[i].getStockQuantity() - quantity > 0) {
 						stocksStatus[i].setStockQuantity(stocksStatus[i].getStockQuantity()-quantity); 
-						updateBalance (stocks[i].getBid() * quantity);
+						updateBalance (stocksStatus[i].getBid() * quantity);
 						System.out.println(quantity+ " of " +symbol+ " stocks were succesfully sold");
 						}
 					else {
@@ -190,21 +176,21 @@ public class Portfolio {
 	 */
 	public boolean buyStock (String symbol, int quantity) {
 		for (int i = 0; i < portfolioSize; i++) {
-			if (symbol == stocks[i].getSymbol()) {
+			if (symbol == stocksStatus[i].getSymbol()) {
 				if(quantity == -1) {
-					int numOfStocks = (int)(balance / stocksStatus[i].getCurrentAsk());
+					int numOfStocks = (int)(balance / stocksStatus[i].getAsk());
 					stocksStatus[i].setStockQuantity(stocksStatus[i].getStockQuantity() + numOfStocks);
-					updateBalance (-(numOfStocks * stocksStatus[i].getCurrentAsk()));
+					updateBalance (-(numOfStocks * stocksStatus[i].getAsk()));
 					System.out.println(numOfStocks+ " of" +symbol+ " stocks were purchased" );
 				}
 				else { 
-					if((stocksStatus[i].currentAsk * quantity) > balance) {
+					if((stocksStatus[i].ask * quantity) > balance) {
 						System.out.println("Not enough balance to complete purchase");
 						return false;
 					}
 					else {
 						stocksStatus[i].setStockQuantity(stocksStatus[i].getStockQuantity() + quantity); 
-						updateBalance (-(quantity) * stocksStatus[i].getCurrentAsk());
+						updateBalance (-(quantity) * stocksStatus[i].getAsk());
 						System.out.println(quantity+ " of " +symbol+ " stocks were succesfully purchased");
 					}
 				}
@@ -221,7 +207,7 @@ public class Portfolio {
 	public float getStocksValue () {
 		float value = 0;
 		for (int i = 0; i < portfolioSize; i++)
-			value += (stocksStatus[i].getCurrentBid() * stocksStatus[i].getStockQuantity());
+			value += (stocksStatus[i].getBid() * stocksStatus[i].getStockQuantity());
 		return value;
 	}
 	
@@ -233,82 +219,5 @@ public class Portfolio {
 		return (getStocksValue() + getBalance());
 	}
 	
-	/**
-	 * The instance of this class represents updated information about the stocks which exist in a portfolio
-	 * @author Anastasya Ziser
-	 * 16/12/2014
-	 */
-		
-	public class StockStatus {
-		
-		private String symbol;
-		private float currentBid, currentAsk;
-		private Date date;
-		private int stockQuantity;
-		private ALGO_RECOMMENDATION recommendation;
-				
-		/**
-		* This method creates new StockStatus
-		*/
-		public StockStatus(String string, float cAsk, float cBid, Date date1, ALGO_RECOMMENDATION rec, int stockQ){
-			symbol = string;
-			currentBid = cBid;
-			currentAsk = cAsk;
-			date = date1;
-			stockQuantity = stockQ;
-		}
-		
-		/**
-		* This method copies the data from StockStatus and creates new StockStatus with the same data 
-		*/	
-		public StockStatus(StockStatus stockStatus){
-			if(this.symbol != null)
-		{
-				this.symbol = stockStatus.symbol;
-				this.currentAsk = stockStatus.currentAsk;
-				this.currentBid = stockStatus.currentBid;
-				this.date = stockStatus.date;
-				this.recommendation = stockStatus.recommendation;
-				this.stockQuantity = stockStatus.stockQuantity;
-			}
-		}
-		
-		public String getSymbol() {
-			return symbol;
-		}
-		public void setSymbol(String symbol) {
-			this.symbol = symbol;
-		}
-		public float getCurrentBid() {
-			return currentBid;
-		}
-		public void setCurrentBid(float currentBid) {
-			this.currentBid = currentBid;
-		}
-		public float getCurrentAsk() {
-			return currentAsk;
-		}
-		public void setCurrentAsk(float currentAsk) {
-			this.currentAsk = currentAsk;
-		}
-		public Date getDate() {
-			return date;
-		}
-		public void setDate(Date date) {
-			this.date = date;
-		}
-		public ALGO_RECOMMENDATION getRecommendation() {
-			return recommendation;
-		}
-		public void setRecommendation(ALGO_RECOMMENDATION recommendation) {
-			this.recommendation = recommendation;
-		}
-		public int getStockQuantity() {
-			return stockQuantity;
-		}
-		public void setStockQuantity(int stockQuantity) {
-			this.stockQuantity = stockQuantity;
-		}
-	}	
 }
 

@@ -4,9 +4,9 @@ import java.util.Date;
 
 public class Stock {
 	
-	private String symbol;
-	private float ask, bid;
-	private java.util.Date date;
+	protected String symbol;
+	protected float ask, bid;
+	protected java.util.Date date;
 	
 	/**
 	* This constructor creates a new Stock

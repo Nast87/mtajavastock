@@ -3,8 +3,8 @@ package com.mta.javacourse.service;
 import java.util.Date;
 
 import com.mta.javacourse.model.Portfolio;
-import com.mta.javacourse.model.Portfolio.StockStatus;
 import com.mta.javacourse.model.Stock;
+import com.mta.javacourse.model.StockStatus;
 
 /**
  * An instance of this class activate actions defined in Portfolio Class.
@@ -17,7 +17,7 @@ public class PortfolioService {
 	Portfolio myPortfolio;
 	
 	public PortfolioService() {
-		myPortfolio = new Portfolio(new Stock[Portfolio.getMaxPortfolioSize()], new StockStatus[Portfolio.getMaxPortfolioSize()], 0, " ");
+		myPortfolio = new Portfolio(new StockStatus[Portfolio.getMaxPortfolioSize()], 0, " ");
 	}
 	
 	/**
