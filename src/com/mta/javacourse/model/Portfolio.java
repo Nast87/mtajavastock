@@ -2,6 +2,12 @@ package com.mta.javacourse.model;
 
 import java.util.Date;
 
+import com.mta.javacourse.exception.BalanceException;
+import com.mta.javacourse.exception.PortfolioFullException;
+import com.mta.javacourse.exception.QuantityException;
+import com.mta.javacourse.exception.StockAlreadyExistsException;
+import com.mta.javacourse.exception.StockNotExistException;
+
 
 /**
  * An instance of this class represents a storage place in order to manage all stocks in one place
@@ -18,7 +24,6 @@ public class Portfolio {
 	public enum ALGO_RECOMMENDATION {DO_NOTHING,BUY,SELL};
 	private float balance;
 	
-
 	public float getBalance() {
 		return balance;
 	}
@@ -74,41 +79,31 @@ public class Portfolio {
 	 * @param newStock - added to the array of stocks
 	 * receives Stock and add it to portfolio’s stocks array.
 	 * @param newStockStatus - receives the information about the stock recently added
+	 * @throws StockAlreadyExistsException 
+	 * @throws PortfolioFullException 
 	 */
-	public void addStock(Stock newStock) {
-		boolean flag = false;
+	public void addStock(Stock newStock) throws PortfolioFullException, StockAlreadyExistsException {
+		
 		if (portfolioSize == MAX_PORTFOLIO_SIZE) {
 			System.out.println("Can't add new stock, portfolio can have only" +MAX_PORTFOLIO_SIZE+ " stocks");
-			flag = true;
+			throw new PortfolioFullException();
 		}
-		for (int i = 0; i < portfolioSize && (!flag); i++) {
-			if (stocksStatus[i].getSymbol() == newStock.getSymbol()) {
-				System.out.println("This stock already exists at the array. You can buy stock instead");
-				flag = true;
-			}
-		}
-		if(!flag) {
-			stocksStatus[portfolioSize] = new StockStatus (newStock.getSymbol(), newStock.getAsk(), newStock.getBid(), new Date(newStock.getDate().getTime()), 0, ALGO_RECOMMENDATION.DO_NOTHING);
-			portfolioSize++;
-			System.out.println("The stock" +newStock.getSymbol()+ "was succesfully added to the array");
-		}
-	}
-	
-	/**
-	 * @return returns string with portfolio title and all stocks html code
-	 */
-	public String getHtmlString() {
-		String htmlTitle = "<b><h1>"+ this.getTitle()+":</h1></b><br>";
-		String htmlCodeString = " ";
+		
 		for (int i = 0; i < portfolioSize; i++) {
-			htmlCodeString += stocksStatus[i].getHtmlDescription() + stocksStatus[i].getStockQuantity() + "<br>";
-		}
-		htmlCodeString += ("<br><b>Portfolio Value: "+ this.getTotalValue()+ " $ <br> Total stock's value: "+this.getStocksValue()+" $<br>The Balance is: "+this.getBalance()+ " $");
-		return htmlTitle + htmlCodeString;
+			if (stocksStatus[i].getSymbol().equalsIgnoreCase(newStock.getSymbol())) {
+				System.out.println("This stock already exists at the array");
+				throw new StockAlreadyExistsException(newStock.symbol);
+			}
+		} 
+		
+		stocksStatus[portfolioSize] = new StockStatus (newStock.getSymbol(), newStock.getAsk(), newStock.getBid(), new Date(newStock.getDate().getTime()), 0, ALGO_RECOMMENDATION.DO_NOTHING);
+		portfolioSize++;
+		System.out.println("The stock " +newStock.getSymbol()+ " was succesfully added to the array");
 	}
 	
+	
 	/**
-	 * This methods updates current balance at the portfolio
+	 * This method updates current balance at the portfolio
 	 * @param amount - the sum that added to the balance
 	 */
 	public void updateBalance (float amount) {
@@ -119,20 +114,21 @@ public class Portfolio {
 	 * This method gets the stock's symbol which you wish to remove. First of all it sells the stock and then removes it from portfolio 
 	 * @param symbol - a symbol of stock you wish to sell and remove
 	 * @return the answer if the stock was removed either not.
+	 * @throws StockNotExistException 
+	 * @throws QuantityException 
 	 */
-	public boolean removeStock(String symbol) {
+	public void removeStock(String symbol) throws StockNotExistException, QuantityException {
 		for (int i = 0; i < portfolioSize; i++) {
-			if (symbol == stocksStatus[i].getSymbol()) {
+			if (symbol.equalsIgnoreCase(stocksStatus[i].getSymbol())) {
 				sellStock(symbol, -1);
 				stocksStatus[i] = stocksStatus[portfolioSize - 1];
 				stocksStatus[i] = stocksStatus[portfolioSize-1];
 				portfolioSize--;
-				System.out.println("The stock " +symbol+ " was succesfully removed");
-				return true;	
+				System.out.println("The stock " +symbol+ " was succesfully removed");	
 			}
 		}
 		System.out.println("The stock " +symbol+ " you ask to remove doesn't exist in your portfolio");
-		return false;
+		throw new StockNotExistException (symbol);
 	}
 	
 	/**
@@ -140,10 +136,12 @@ public class Portfolio {
 	 * @param symbol - a symbol of the stock you want to sell
 	 * @param quantity - a quantity of stocks you want to sell
 	 * @return an answer if it is possible to sell the stocks if exists in portfolio
+	 * @throws StockNotExistException 
+	 * @throws QuantityException 
 	 */
-	public boolean sellStock (String symbol, int quantity) {
+	public void sellStock (String symbol, int quantity) throws StockNotExistException, QuantityException {
 		for (int i = 0; i < portfolioSize; i++) {
-			if (symbol == stocksStatus[i].getSymbol()) {
+			if (symbol.equalsIgnoreCase(stocksStatus[i].getSymbol())) {
 				if(quantity == -1) {	
 					updateBalance (stocksStatus[i].getBid() * stocksStatus[i].getStockQuantity());
 					stocksStatus[i].setStockQuantity(0);
@@ -157,15 +155,13 @@ public class Portfolio {
 						}
 					else {
 						System.out.println("The quantity you want to sell is higher than amount of stocks you own");
-						return false;
+						throw new QuantityException (symbol);
 					}
 				}
-				return true;
-				}
 			}
-		
+		}
 		System.out.println("The stock " +symbol+ " you want to sell doesn't exist in your portfolio");
-		return false;		
+		throw new StockNotExistException (symbol);
 		}
 	
 	/**
@@ -173,10 +169,12 @@ public class Portfolio {
 	 * @param symbol - a symbol of the stock you want to sell
 	 * @param quantity - a quantity of stocks you want to sell
 	 * @return an answer if it is possible to buy the stocks with the the balance exists in the portfolio
+	 * @throws BalanceException 
+	 * @throws StockNotExistException 
 	 */
-	public boolean buyStock (String symbol, int quantity) {
+	public void buyStock (String symbol, int quantity) throws BalanceException, StockNotExistException {
 		for (int i = 0; i < portfolioSize; i++) {
-			if (symbol == stocksStatus[i].getSymbol()) {
+			if (symbol.equalsIgnoreCase(stocksStatus[i].getSymbol())) {
 				if(quantity == -1) {
 					int numOfStocks = (int)(balance / stocksStatus[i].getAsk());
 					stocksStatus[i].setStockQuantity(stocksStatus[i].getStockQuantity() + numOfStocks);
@@ -185,8 +183,7 @@ public class Portfolio {
 				}
 				else { 
 					if((stocksStatus[i].ask * quantity) > balance) {
-						System.out.println("Not enough balance to complete purchase");
-						return false;
+						throw new BalanceException();
 					}
 					else {
 						stocksStatus[i].setStockQuantity(stocksStatus[i].getStockQuantity() + quantity); 
@@ -194,10 +191,9 @@ public class Portfolio {
 						System.out.println(quantity+ " of " +symbol+ " stocks were succesfully purchased");
 					}
 				}
-			return true;
 			}
 		}
-		return false;
+		throw new StockNotExistException (symbol);
 	}
 	
 	/**
@@ -219,5 +215,17 @@ public class Portfolio {
 		return (getStocksValue() + getBalance());
 	}
 	
+	/**
+	 * @return returns string with portfolio title and all stocks html code
+	 */
+	public String getHtmlString() {
+		String htmlTitle = "<b><h1>"+ this.getTitle()+":</h1></b><br>";
+		String htmlCodeString = " ";
+		for (int i = 0; i < portfolioSize; i++) {
+			htmlCodeString += stocksStatus[i].getHtmlDescription() + stocksStatus[i].getStockQuantity() + "<br>";
+		}
+		htmlCodeString += ("<br><b>Portfolio Value: "+ this.getTotalValue()+ " $ <br> Total stock's value: "+this.getStocksValue()+" $<br>The Balance is: "+this.getBalance()+ " $");
+		return htmlTitle + htmlCodeString;
+	}	
 }
 
